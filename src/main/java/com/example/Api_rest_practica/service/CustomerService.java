@@ -14,14 +14,16 @@ public class CustomerService {
     private CustomerRepository customerRepository;
 
 
-    public List<Customer> getALLCustomer( ){
+    public List<Customer> getALLCustomer() {
         return (List<Customer>) customerRepository.findAll();
     }
-    public Customer findById(Long id){
+
+    public Customer findById(Long id) {
         return customerRepository.findById(id).orElse(null);
     }
-    public Customer saveCustomer(CustomerDto customerDto){
-        Customer customer=Customer.builder()
+
+    public Customer saveCustomer(CustomerDto customerDto) {
+        Customer customer = Customer.builder()
                 .id(customerDto.getId())
                 .name(customerDto.getName())
                 .documentNumber(customerDto.getDocumentNumber())
@@ -30,7 +32,8 @@ public class CustomerService {
                 .build();
         return customerRepository.save(customer);
     }
-    public void deleteCustomer(Long id){
-         customerRepository.deleteById(id);
+
+    public void deleteCustomer(Customer customer) {
+        customerRepository.delete(customer);
     }
 }
