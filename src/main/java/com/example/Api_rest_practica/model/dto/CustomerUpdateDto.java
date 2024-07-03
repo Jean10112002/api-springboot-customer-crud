@@ -1,6 +1,7 @@
 package com.example.Api_rest_practica.model.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
@@ -12,7 +13,8 @@ import java.io.Serializable;
 @Builder
 @ToString
 @Data
-public class CustomerDto implements Serializable {
+public class CustomerUpdateDto implements Serializable {
+    @NotNull(message = "Id is mandatory")
     private Long id;
     @NotBlank(message = "Document type is mandatory")
     @Size(max = 10, message = "Document type must be less than 10 characters")

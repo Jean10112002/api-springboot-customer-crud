@@ -9,7 +9,7 @@ import java.io.Serializable;
 @Builder
 @Data
 @ToString
-public class ApiResponse implements Serializable {
+public class ApiResponse<M> implements Serializable {
     private int status;
     private String message;
     private boolean error;

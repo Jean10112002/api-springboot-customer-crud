@@ -2,6 +2,7 @@ package com.example.Api_rest_practica.service;
 
 import com.example.Api_rest_practica.model.Customer;
 import com.example.Api_rest_practica.model.dto.CustomerDto;
+import com.example.Api_rest_practica.model.dto.CustomerUpdateDto;
 import com.example.Api_rest_practica.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,16 @@ public class CustomerService {
     }
 
     public Customer saveCustomer(CustomerDto customerDto) {
+        Customer customer = Customer.builder()
+                .id(customerDto.getId())
+                .name(customerDto.getName())
+                .documentNumber(customerDto.getDocumentNumber())
+                .documentType(customerDto.getDocumentType())
+                .phone(customerDto.getPhone())
+                .build();
+        return customerRepository.save(customer);
+    }
+    public Customer updateCustomer(CustomerUpdateDto customerDto) {
         Customer customer = Customer.builder()
                 .id(customerDto.getId())
                 .name(customerDto.getName())

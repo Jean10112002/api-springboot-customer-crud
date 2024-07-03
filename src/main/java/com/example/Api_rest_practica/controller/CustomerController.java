@@ -2,15 +2,20 @@ package com.example.Api_rest_practica.controller;
 
 import com.example.Api_rest_practica.model.Customer;
 import com.example.Api_rest_practica.model.dto.CustomerDto;
+import com.example.Api_rest_practica.model.dto.CustomerUpdateDto;
 import com.example.Api_rest_practica.responses.ApiResponse;
 import com.example.Api_rest_practica.service.CustomerService;
-import org.apache.coyote.Response;
+import jakarta.validation.Valid;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/customer")
@@ -82,7 +87,7 @@ public class CustomerController {
     }
 
     @PostMapping
-    public ResponseEntity<?> saveCustomer(@RequestBody CustomerDto customer) {
+    public ResponseEntity<?> saveCustomer(@Valid @RequestBody CustomerDto customer) {
         try {
             Customer customerSave = customerService.saveCustomer(customer);
             return new ResponseEntity<>(ApiResponse.builder()
@@ -111,10 +116,29 @@ public class CustomerController {
         }
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse<Map<String, String>>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+
+        ApiResponse<Map<String, String>> response = ApiResponse.<Map<String, String>>builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error(true)
+                .message("Error de validación")
+                .data(errors)
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
     @PutMapping
-    public ResponseEntity<?> updateCustomer(@RequestBody CustomerDto customer) {
+    public ResponseEntity<?> updateCustomer(@Valid @RequestBody CustomerUpdateDto customer) {
         try {
-            Customer customerUpdate = customerService.saveCustomer(customer);
+            Customer customerUpdate = customerService.updateCustomer(customer);
             return new ResponseEntity<>(ApiResponse.builder()
                     .status(200)
                     .error(false)
@@ -144,7 +168,7 @@ public class CustomerController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCustomer(@PathVariable Long id) {
         try {
-            Customer customer=customerService.findById(id);
+            Customer customer = customerService.findById(id);
             if (customer == null) {
                 return new ResponseEntity<>(ApiResponse.builder()
                         .status(404)
